@@ -30,20 +30,19 @@ class ResPartner(models.Model):
         readonly=False,
         store=True,
         recursive=True, index=True)
-    # display_name = fields.Char('_compute_name', required=False, precompute=True, recursive=True, index=True)
 
     channel_ids = fields.Many2many(
         relation='mail_channel_library_book_partner')
-    meeting_ids = fields.Many2many(relation='mmetings_partner')
+    meeting_ids = fields.Many2many(relation='meetings_partner')
 
-    @api.constrains("firstname", "lastname")
+    @api.constrains("first_name", "last_name")
     def _check_name(self):
         """Ensure at least one name is set."""
         for record in self:
             if all(
                 (
                     record.type == "contact" or record.is_company,
-                    not (record.firstname or record.lastname),
+                    not (record.first_name or record.last_name),
                 )
             ):
                 raise EmptyNamesError(record)
@@ -59,24 +58,15 @@ class ResPartner(models.Model):
             self.has_first_name = True
         else:
             self.has_first_name = False
-    
-    # @api.onchange("first_name", "last_name")
-    # def _recompute_display_name(self):
-    #     self.display_name = str(str(self.first_name) + ' ' + str(self.last_name))
-
-    # def _compute_display_name(self):
-    #     self.display_name = str(str(self.first_name) + ' ' + str(self.last_name))
 
     @api.onchange("first_name", "last_name")
     def _recompute_name(self):
         self.name = str(str(self.first_name) + ' ' + str(self.last_name))
-        # self.display_name = self.name
 
     def _compute_name(self):
         """Костыль чтобы сделать precomputed поле изменяемым."""
         for record in self:
             record.name = str(str(record.first_name) + ' ' + str(record.last_name))
-        # self.display_name = self.name
 
     @api.constrains("department")
     def _check_department(self):
@@ -89,4 +79,16 @@ class ResPartner(models.Model):
     def _check_company_name(self):
         if self.company_name:
             if not str(self.company_name).isalnum():
-                raise ValidationError("The company name field can accept only alphanumeric characters")
+                raise ValidationError(
+                    "The company name field can accept only alphanumeric characters")
+
+    @api.constrains("phone", "email")
+    def _not_empty_or_blank(self):
+        if not self.phone or not self.email:
+            raise ValidationError(
+                "Please check that both email and phone fields are filled out")
+        phone = ''.join(self.phone.split())
+        email = ''.join(self.email.split())
+        if not phone or not email:
+            raise ValidationError(
+                "Please check that both email and phone fields are not blank")
