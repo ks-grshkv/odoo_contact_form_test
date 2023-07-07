@@ -27,6 +27,7 @@ class ResPartner(models.Model):
     name = fields.Char(
         compute='_compute_name', required=False,
         precompute=True,
+        readonly=False,
         store=True,
         recursive=True, index=True)
     # display_name = fields.Char('_compute_name', required=False, precompute=True, recursive=True, index=True)
@@ -34,7 +35,6 @@ class ResPartner(models.Model):
     channel_ids = fields.Many2many(
         relation='mail_channel_library_book_partner')
     meeting_ids = fields.Many2many(relation='mmetings_partner')
-
 
     @api.constrains("firstname", "lastname")
     def _check_name(self):
@@ -73,7 +73,9 @@ class ResPartner(models.Model):
         # self.display_name = self.name
 
     def _compute_name(self):
-        self.name = str(str(self.first_name) + ' ' + str(self.last_name))
+        """Костыль чтобы сделать precomputed поле изменяемым."""
+        for record in self:
+            record.name = str(str(record.first_name) + ' ' + str(record.last_name))
         # self.display_name = self.name
 
     @api.constrains("department")
