@@ -11,12 +11,12 @@ class ResPartner(models.Model):
         [('uk', 'United Kingdom'), ('usa', 'United States')],
         tracking=True,
         string='Origin Country')
-    # first_name = fields.Char(string='First Name')
+    first_name = fields.Char(string='First Name')
     last_name = fields.Char(string='Last Name')
     has_first_name = fields.Boolean(
         compute='_compute_has_firstname')
-    # name = fields.Char(
-    #     compute='_compute_name', recursive=True, store=True, index=True)
+    name = fields.Char(
+        compute='_compute_name', recursive=True, store=True, index=True)
 
     channel_ids = fields.Many2many(
         relation='mail_channel_library_book_partner')
@@ -56,6 +56,7 @@ class ResCompany(models.Model):
 
     @api.constrains("name")
     def _check_name(self):
+        print('ASDSFDKFK@@@@@@@@@@')
         if self.name and not self.name.isalnum():
             print('AAAASDADSDSADAD', self.name)
             raise ValidationError(
