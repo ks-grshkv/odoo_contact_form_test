@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "contact_form_module",
+    'name': "Contact Form Module",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Enhances the functionality of the contact card form.""",
 
     'description': """
         Long description of module's purpose

@@ -6,14 +6,19 @@
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-          <field name="lang" position="after">  
-            <field name="experience"/>
-            <field name="origin_country"/>
-            <field name="department"/>
+          <field name="email" position="after"> 
+            <!-- <field name="has_first_name" invisible="1"/>  -->
+            <field name="experience" placeholder="Years of experience"/>
+            <field name="department" placeholder="Department name"/>
           </field>
-          <field name="name" position="after">  
-            <field name="first_name" placeholder="e.g. Brandom"/>
-            <field name="last_name" placeholder="e.g. Freeman" attrs="{'invisible':[('has_first_name', '=', 'False')], 'invisible':[('is_company', '=', 'False')]}" />
+          <field name="experience" placeholder="Years of experience"/>
+            <field name="department" placeholder="Department name"/>
+          <field name="country_id" position="after"> 
+            <field name="origin_country" placeholder="Origin country"/>
+          </field>
+          <field name="name" position="replace" invisible="1">  
+            <field name="name" placeholder="e.g. Brandom" attrs="{'invisible':[('is_company', '=', 'False')]}"/>
+            <field name="last_name" placeholder="e.g. Freeman" attrs="{'invisible':[('is_company', '=', 'False')]}" />
           </field>
         </field>
     </record>
