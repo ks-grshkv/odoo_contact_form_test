@@ -29,10 +29,8 @@ class ResPartner(models.Model):
 
     def _compute_has_firstname(self):
         if self.name:
-            print('AAAAAAA', self.name)
             self.has_first_name = True
         else:
-            print('NNNNNA')
             self.has_first_name = False
 
     def _compute_name(self):
@@ -48,16 +46,4 @@ class ResPartner(models.Model):
     def _check_company_name(self):
         if self.company_name:
             if not str(self.company_name).isalnum():
-                raise ValidationError("nnanana2")
-
-
-class ResCompany(models.Model):
-    _inherit = 'res.company'
-
-    @api.constrains("name")
-    def _check_name(self):
-        print('ASDSFDKFK@@@@@@@@@@')
-        if self.name and not self.name.isalnum():
-            print('AAAASDADSDSADAD', self.name)
-            raise ValidationError(
-                "The company name field can accept only alphanumeric characters")
+                raise ValidationError("The company name field can accept only alphanumeric characters")
