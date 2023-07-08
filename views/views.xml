@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
+    <!-- <record id="view_company_form" model="ir.ui.view">
+      <field name="name">res.company.inherited</field>
+      <field name="model">res.company</field>
+      <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+          <field name="name" position="replace">  
+            <field name="name" placeholder="e.g. MyCompany"/>
+          </field>
+        </field>
+    </record> -->
+
     <record id="res_partner_contact_form" model="ir.ui.view">
       <field name="name">res.partner.inherited</field>
       <field name="model">res.partner</field>
@@ -13,71 +24,15 @@
           <field name="country_id" position="after"> 
             <field name="origin_country" placeholder="Origin country"/>
           </field>
-          <field name="name" position="replace" invisible="1">  
+          <field name="name" position="replace">  
             <field name="has_first_name" invisible="1"/> 
+            <field name="is_company" invisible="1"/> 
+            <!-- <field id="individual" name="name" invisible="1"/>  -->
+            <field id="company" name="new_company_name" placeholder="e.g. MyCompany" attrs="{'required' : [('type', '=', 'contact')], 'invisible': [('is_company','=', False)]}"/>
             <field id="individual" name="first_name" placeholder="e.g. Brandom" attrs="{'invisible': [('is_company','=', True)]}"/>
-            <field name="last_name" placeholder="e.g. Freeman" attrs="{'invisible': [('is_company','=', True), ('first_name','=', False)]}" />
+            <field name="last_name" placeholder="e.g. Freeman" attrs="{'invisible': ['|', ('is_company','=', True), ('first_name','=', False)]}" />
           </field>
         </field>
     </record>
   </data>
 </odoo>
-
-
-
-    <!-- explicit list view definition -->
-<!--
-    <record model="ir.ui.view" id="/../../../../mnt/extra-addons/contact_form_module.list">
-      <field name="name">/../../../../mnt/extra-addons/contact_form_module list</field>
-      <field name="model">/../../../../mnt/extra-addons/contact_form_module./../../../../mnt/extra-addons/contact_form_module</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
-        </tree>
-      </field>
-    </record>
--->
-
-    <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="/../../../../mnt/extra-addons/contact_form_module.action_window">
-      <field name="name">/../../../../mnt/extra-addons/contact_form_module window</field>
-      <field name="res_model">/../../../../mnt/extra-addons/contact_form_module./../../../../mnt/extra-addons/contact_form_module</field>
-      <field name="view_mode">tree,form</field>
-    </record>
--->
-
-    <!-- server action to the one above -->
-<!--
-    <record model="ir.actions.server" id="/../../../../mnt/extra-addons/contact_form_module.action_server">
-      <field name="name">/../../../../mnt/extra-addons/contact_form_module server</field>
-      <field name="model_id" ref="model_/../../../../mnt/extra-addons/contact_form_module_/../../../../mnt/extra-addons/contact_form_module"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": model._name,
-        }
-      </field>
-    </record>
--->
-
-    <!-- Top menu item -->
-<!--
-    <menuitem name="/../../../../mnt/extra-addons/contact_form_module" id="/../../../../mnt/extra-addons/contact_form_module.menu_root"/>
--->
-    <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="/../../../../mnt/extra-addons/contact_form_module.menu_1" parent="/../../../../mnt/extra-addons/contact_form_module.menu_root"/>
-    <menuitem name="Menu 2" id="/../../../../mnt/extra-addons/contact_form_module.menu_2" parent="/../../../../mnt/extra-addons/contact_form_module.menu_root"/>
--->
-    <!-- actions -->
-<!--
-    <menuitem name="List" id="/../../../../mnt/extra-addons/contact_form_module.menu_1_list" parent="/../../../../mnt/extra-addons/contact_form_module.menu_1"
-              action="/../../../../mnt/extra-addons/contact_form_module.action_window"/>
-    <menuitem name="Server to list" id="/../../../../mnt/extra-addons/contact_form_module" parent="/../../../../mnt/extra-addons/contact_form_module.menu_2"
-              action="/../../../../mnt/extra-addons/contact_form_module.action_server"/>
--->
