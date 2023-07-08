@@ -16,20 +16,27 @@ class ResPartner(models.Model):
     first_name = fields.Char(string='First Name', default='')
     last_name = fields.Char(string='Last Name', default='')
     new_company_name = fields.Char(
-        string='Company Name',
-        default='',
-        required=False
+            string='Company Name',
+            default='',
+            required=False
         )
     has_first_name = fields.Boolean(default=False)
+    display_name = fields.Char(
+            compute='_compute_display_name',
+            recursive=True,
+            store=True,
+            index=True
+        )
 
     name = fields.Char(
-        compute='_compute_name',
-        required=False,
-        precompute=True,
-        readonly=False,
-        store=True,
-        recursive=True,
-        index=True)
+            compute='_recompute_name',
+            required=False,
+            precompute=True,
+            readonly=False,
+            store=True,
+            recursive=True,
+            index=True
+        )
 
     channel_ids = fields.Many2many(
         relation='mail_channel_library_book_partner')
@@ -64,28 +71,15 @@ class ResPartner(models.Model):
     @api.onchange("first_name", "last_name", "new_company_name")
     def _recompute_name(self):
         for record in self:
-            if not record.first_name:
-                record.first_name = ''
-            if not record.last_name:
-                record.last_name = ''
-            if not record.first_name or not record.last_name:
+            if not record.first_name and not record.last_name:
                 record.name = record.new_company_name
-            if not record.first_name:
-                if record.last_name:
-                    record.name = record.last_name
+            elif not record.first_name:
+                record.name = record.last_name
+            elif not record.last_name:
+                record.name = record.first_name
             else:
                 record.name = record.first_name + ' ' + record.last_name
-
-    # def _compute_name(self):
-    #     """Костыль чтобы сделать precomputed поле изменяемым."""
-    #     for record in self:
-    #         if not record.first_name or not record.last_name:
-    #             record.name = record.new_company_name
-    #         if not record.first_name:
-    #             if record.last_name:
-    #                 record.name = record.last_name
-    #         else:
-    #             record.name = record.first_name + ' ' + record.last_name
+        self._compute_display_name()
 
     @api.constrains("department")
     def _check_department(self):
@@ -94,6 +88,19 @@ class ResPartner(models.Model):
                 raise ValidationError(
                     "The department field can accept "
                     + "only alphabetic characters")
+
+    @api.depends("first_name", "last_name", "new_company_name")
+    def _compute_display_name(self):
+        for record in self:
+            if not record.first_name and not record.last_name:
+                record.display_name = record.new_company_name
+            elif not record.first_name:
+                record.display_name = record.last_name
+            elif not record.last_name:
+                record.display_name = record.first_name
+            else:
+                record.display_name = record.first_name + ' '
+                + record.last_name
 
     @api.constrains("new_company_name")
     def _check_company_name(self):
