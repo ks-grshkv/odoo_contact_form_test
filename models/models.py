@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from odoo import _, exceptions
+# from odoo import _, exceptions
 
 
 # class EmptyNamesError(exceptions.ValidationError):
@@ -23,7 +23,11 @@ class ResPartner(models.Model):
         string='Origin Country')
     first_name = fields.Char(string='First Name', default='')
     last_name = fields.Char(string='Last Name', default='')
-    new_company_name = fields.Char(string='Company Name', default='', required=False)
+    new_company_name = fields.Char(
+        string='Company Name',
+        default='',
+        required=False
+        )
     has_first_name = fields.Boolean(default=False)
 
     name = fields.Char(
@@ -71,7 +75,6 @@ class ResPartner(models.Model):
                     record.name = record.last_name
             else:
                 record.name = record.first_name + ' ' + record.last_name
-        print('SDGFSGDGGSGG1', record.name)
 
     def _compute_name(self):
         """Костыль чтобы сделать precomputed поле изменяемым."""
@@ -83,7 +86,6 @@ class ResPartner(models.Model):
                     record.name = record.last_name                    
             else:
                 record.name = record.first_name + ' ' + record.last_name
-        print('SDGFSGDGGSGG', record.name)
 
     @api.constrains("department")
     def _check_department(self):
@@ -94,10 +96,8 @@ class ResPartner(models.Model):
 
     @api.constrains("new_company_name")
     def _check_company_name(self):
-        print('AAAAAAAa')
         if self.is_company:
             if self.new_company_name:
-                print('AAAAAAAaDDDDDD', str(self.new_company_name))
                 if not str(self.new_company_name).isalnum():
                     raise ValidationError(
                         "The company name field can accept only alphanumeric characters")
