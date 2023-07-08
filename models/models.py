@@ -17,6 +17,8 @@ class ResPartner(models.Model):
 
     experience = fields.Float()
     department = fields.Char()
+    phone = fields.Char(unaccent=False, required=True)
+    email = fields.Char(required=True)
     origin_country = fields.Selection(
         [('uk', 'United Kingdom'), ('usa', 'United States')],
         tracking=True,

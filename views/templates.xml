@@ -1,5 +1,15 @@
 <odoo>
     <data>
+    <!-- <template>
+
+      <t t-name="child.template" t-inherit="base.template" t-inherit-mode="primary">
+        <xpath expr="//field[@name='phone']" position="after">
+          <field name="experience"/>
+          <field name="department"/>
+        </xpath>
+      </t>
+
+    </template> -->
 <!--
         <template id="listing">
           <ul>
