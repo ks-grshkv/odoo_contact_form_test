@@ -7,8 +7,8 @@ class ResPartner(models.Model):
 
     experience = fields.Float()
     department = fields.Char()
-    phone = fields.Char(unaccent=False, required=True)
-    email = fields.Char(required=True)
+    phone = fields.Char(unaccent=False)
+    email = fields.Char()
     origin_country = fields.Selection(
         [('uk', 'United Kingdom'), ('usa', 'United States')],
         tracking=True,
@@ -68,18 +68,24 @@ class ResPartner(models.Model):
         else:
             self.has_first_name = False
 
+    def concatenate_name(self, first_name, last_name, new_company_name):
+        if not first_name and not last_name:
+            return new_company_name
+        elif not first_name:
+            return last_name
+        elif not last_name:
+            return first_name
+        else:
+            return first_name + ' ' + last_name
+
     @api.onchange("first_name", "last_name", "new_company_name")
     def _recompute_name(self):
         for record in self:
-            if not record.first_name and not record.last_name:
-                record.name = record.new_company_name
-            elif not record.first_name:
-                record.name = record.last_name
-            elif not record.last_name:
-                record.name = record.first_name
-            else:
-                record.name = record.first_name + ' ' + record.last_name
-        self._compute_display_name()
+            record.name = self.concatenate_name(
+                record.first_name,
+                record.last_name,
+                record.new_company_name
+            )
 
     @api.constrains("department")
     def _check_department(self):
@@ -87,20 +93,17 @@ class ResPartner(models.Model):
             if not self.department.isalpha():
                 raise ValidationError(
                     "The department field can accept "
-                    + "only alphabetic characters")
+                    + "only alphabetic characters"
+                )
 
     @api.depends("first_name", "last_name", "new_company_name")
     def _compute_display_name(self):
         for record in self:
-            if not record.first_name and not record.last_name:
-                record.display_name = record.new_company_name
-            elif not record.first_name:
-                record.display_name = record.last_name
-            elif not record.last_name:
-                record.display_name = record.first_name
-            else:
-                record.display_name = record.first_name + ' '
-                + record.last_name
+            record.display_name = self.concatenate_name(
+                record.first_name,
+                record.last_name,
+                record.new_company_name
+            )
 
     @api.constrains("new_company_name")
     def _check_company_name(self):
@@ -109,15 +112,18 @@ class ResPartner(models.Model):
                 if not str(self.new_company_name).isalnum():
                     raise ValidationError(
                         "The company name field can accept "
-                        + "only alphanumeric characters")
+                        + "only alphanumeric characters"
+                    )
 
     @api.constrains("phone", "email")
     def _not_empty_or_blank(self):
         if not self.phone or not self.email:
             raise ValidationError(
-                "Please check that both email and phone fields are filled out")
+                "Please check that both email and phone fields are filled out"
+            )
         phone = ''.join(self.phone.split())
         email = ''.join(self.email.split())
         if not phone or not email:
             raise ValidationError(
-                "Please check that both email and phone fields are not blank")
+                "Please check that both email and phone fields are not blank"
+            )
