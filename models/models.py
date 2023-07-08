@@ -3,33 +3,33 @@ from odoo.exceptions import ValidationError
 
 
 class ResPartner(models.Model):
-    _inherit = 'res.partner'
+    _inherit = "res.partner"
 
     experience = fields.Float()
     department = fields.Char()
     phone = fields.Char(unaccent=False)
     email = fields.Char()
     origin_country = fields.Selection(
-        [('uk', 'United Kingdom'), ('usa', 'United States')],
+        [("uk", "United Kingdom"), ("usa", "United States")],
         tracking=True,
-        string='Origin Country')
-    first_name = fields.Char(string='First Name', default='')
-    last_name = fields.Char(string='Last Name', default='')
+        string="Origin Country")
+    first_name = fields.Char(string="First Name", default="")
+    last_name = fields.Char(string="Last Name", default="")
     new_company_name = fields.Char(
-            string='Company Name',
-            default='',
+            string="Company Name",
+            default="",
             required=False
         )
     has_first_name = fields.Boolean(default=False)
     display_name = fields.Char(
-            compute='_compute_display_name',
+            compute="_compute_display_name",
             recursive=True,
             store=True,
             index=True
         )
 
     name = fields.Char(
-            compute='_recompute_name',
+            compute="_recompute_name",
             required=False,
             precompute=True,
             readonly=False,
@@ -39,8 +39,8 @@ class ResPartner(models.Model):
         )
 
     channel_ids = fields.Many2many(
-        relation='mail_channel_library_book_partner')
-    meeting_ids = fields.Many2many(relation='meetings_partner')
+        relation="mail_channel_library_book_partner")
+    meeting_ids = fields.Many2many(relation="meetings_partner")
 
     @api.constrains("first_name", "last_name", "new_company_name")
     def _check_name(self):
@@ -54,10 +54,13 @@ class ResPartner(models.Model):
                         "Please set at least one of the names")
             elif record.is_company and not record.new_company_name:
                 raise ValidationError(
-                        "Please set at least one of the names")
+                        "Please set company name")
 
     @api.onchange("experience")
     def _onchange_experience(self):
+        """
+        Set experience to 0.00 if negative value is given.
+        """
         if self.experience < 0:
             self.experience = 0
 
@@ -69,6 +72,11 @@ class ResPartner(models.Model):
             self.has_first_name = False
 
     def concatenate_name(self, first_name, last_name, new_company_name):
+        """
+        Auxillary function.
+        For indivifual partner: concatenates strings for first_name and last_name;
+        For company partner: returns new_company_name.
+        """
         if not first_name and not last_name:
             return new_company_name
         elif not first_name:
@@ -76,7 +84,7 @@ class ResPartner(models.Model):
         elif not last_name:
             return first_name
         else:
-            return first_name + ' ' + last_name
+            return first_name + " " + last_name
 
     @api.onchange("first_name", "last_name", "new_company_name")
     def _recompute_name(self):
@@ -121,8 +129,8 @@ class ResPartner(models.Model):
             raise ValidationError(
                 "Please check that both email and phone fields are filled out"
             )
-        phone = ''.join(self.phone.split())
-        email = ''.join(self.email.split())
+        phone = "".join(self.phone.split())
+        email = "".join(self.email.split())
         if not phone or not email:
             raise ValidationError(
                 "Please check that both email and phone fields are not blank"
